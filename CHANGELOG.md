@@ -11,6 +11,7 @@
 
 * [#1550](https://github.com/bbatsov/projectile/issues/1550): Make `projectile-regenerate-tags` tramp-aware.
 * [#1673](https://github.com/bbatsov/projectile/issues/1673): Fix CMake system-preset filename.
+* [#xxxx](): Don't update default-directory of current buffer when switching project via commander.
 
 ## 2.4.0 (2021-05-27)
 
