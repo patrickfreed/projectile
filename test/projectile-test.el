@@ -929,7 +929,25 @@ Just delegates OPERATION and ARGS for all operations except for`shell-command`'.
           (projectile-add-known-project (file-name-as-directory (expand-file-name "project")))
           (projectile-switch-project-by-name (file-name-as-directory (expand-file-name "project")))
 
-          (expect (current-buffer) :to-be (get-file-buffer "project/file")))))))
+          (expect (current-buffer) :to-be (get-file-buffer "project/file"))))))
+
+  (it "doesn't change current buffer's default-directory"
+      (let ((projectile-switch-project-action
+             (lambda () (switch-to-buffer (find-file-noselect "file" t)))))
+        (projectile-test-with-sandbox
+         (projectile-test-with-files
+          ("project/"
+           "project/file")
+          (projectile-add-known-project (file-name-as-directory (expand-file-name "project")))
+          (with-temp-buffer
+            (let ((temp-buf (current-buffer))
+                  (old-default default-directory))
+              (projectile-switch-project-by-name (file-name-as-directory (expand-file-name "project")))
+
+              (expect (current-buffer) :to-be (get-file-buffer "project/file"))
+
+              (with-current-buffer temp-buf
+                (expect default-directory :to-be old-default)))))))))
 
 (describe "projectile-ignored-buffer-p"
   (it "checks if buffer should be ignored"
