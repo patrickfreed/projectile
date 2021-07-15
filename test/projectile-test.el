@@ -933,18 +933,27 @@ Just delegates OPERATION and ARGS for all operations except for`shell-command`'.
 
   (it "doesn't change current buffer's default-directory"
       (let ((projectile-switch-project-action
-             (lambda () (switch-to-buffer (find-file-noselect "file" t)))))
+             (lambda () (switch-to-buffer (find-file-noselect "fileA" t)))))
         (projectile-test-with-sandbox
          (projectile-test-with-files
-          ("project/"
-           "project/file")
-          (projectile-add-known-project (file-name-as-directory (expand-file-name "project")))
+          ("projectA/"
+           "projectA/fileA"
+           "projectB/"
+           "projectB/fileB")
+          (projectile-add-known-project (file-name-as-directory (expand-file-name "projectA")))
+          (projectile-add-known-project (file-name-as-directory (expand-file-name "projectB")))
           (with-temp-buffer
             (let ((temp-buf (current-buffer))
                   (old-default default-directory))
-              (projectile-switch-project-by-name (file-name-as-directory (expand-file-name "project")))
+              (message "old default: %S" default-directory)
+              (projectile-switch-project-by-name (file-name-as-directory (expand-file-name "projectA")))
+              (message "now: %S" default-directory)
+              (message "old: %S" old-default)
+              (message "%S" (get-file-buffer "fileA"))
 
-              (expect (current-buffer) :to-be (get-file-buffer "project/file"))
+              (expect (current-buffer) :to-be (get-file-buffer "fileA"))
+              (message "%S" default-directory)
+              (expect (string-suffix-p "projectA/" default-directory))
 
               (with-current-buffer temp-buf
                 (expect default-directory :to-be old-default)))))))))
