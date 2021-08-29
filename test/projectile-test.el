@@ -933,7 +933,8 @@ Just delegates OPERATION and ARGS for all operations except for`shell-command`'.
 
   (it "doesn't change current buffer's default-directory"
       (let ((projectile-switch-project-action
-             (lambda () (switch-to-buffer (find-file-noselect "fileA" t)))))
+             (lambda ()
+               (switch-to-buffer (find-file-noselect "fileA" t)))))
         (projectile-test-with-sandbox
          (projectile-test-with-files
           ("projectA/"
@@ -946,7 +947,7 @@ Just delegates OPERATION and ARGS for all operations except for`shell-command`'.
             (let ((temp-buf (current-buffer))
                   (old-default default-directory))
               (message "old default: %S" default-directory)
-              (projectile-switch-project-by-name (file-name-as-directory (expand-file-name "projectA")))
+              (projectile-switch-project-by-name (file-name-as-directory (expand-file-name "projectA")) t)
               (message "now: %S" default-directory)
               (message "old: %S" old-default)
               (message "%S" (get-file-buffer "fileA"))
@@ -956,6 +957,8 @@ Just delegates OPERATION and ARGS for all operations except for`shell-command`'.
               (expect (string-suffix-p "projectA/" default-directory))
 
               (with-current-buffer temp-buf
+                (message "old buf: %S" temp-buf)
+                (message "old buf default: %S" default-directory)
                 (expect default-directory :to-be old-default)))))))))
 
 (describe "projectile-ignored-buffer-p"
